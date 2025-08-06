@@ -6,118 +6,94 @@ import seaborn as sns
 import joblib
 from xgboost import plot_importance
 
-# Set page config
-st.set_page_config(page_title="🏠 House Price Predictor", layout="wide", page_icon="🏡")
+# Set Streamlit config
+st.set_page_config(page_title="🏡 توقع سعر العقار", layout="wide", page_icon="🏠")
 
 # Load CSS for styling
 def local_css(file_name):
     with open(file_name) as f:
         st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-local_css("style.css")  # Optional: Add custom styles in style.css
+local_css("style.css")
 
 # Title & Header
-st.title("🏡 The Accuarate Melbourne House Price Prediction App")
-st.markdown("Built with XGBoost and Streamlit — Predict house prices interactively!")
+st.title("🏡 تطبيق توقع أسعار العقارات في السعودية")
+st.markdown("باستخدام XGBoost و Streamlit — توقع سعر العقار بناءً على مدخلاتك!")
 
-# Sidebar
-st.sidebar.header("🔍 Input Features")
-st.sidebar.markdown("Adjust the values below to predict house price.")
+# Sidebar Inputs
+st.sidebar.header("🔍 أدخل معلومات العقار")
 
-# Load dataset (for feature info)
+# Load Arabic dataset
 @st.cache_data
 def load_data():
-    df = pd.read_csv("MELBOURNE_HOUSE_PRICES_LESS.csv")
-    return df
+    return pd.read_csv("SA_Aqar.csv")
 
 df = load_data()
 
-# Load model
+# Load trained model
 @st.cache_resource
 def load_model():
-    model = joblib.load("xgboost_house_price_model.pkl")
-    return model
+    return joblib.load("xgboost_house_price_model.pkl")
 
 model = load_model()
 
-# Sidebar Inputs
-rooms = st.sidebar.slider("🛏 Rooms", min_value=1, max_value=10, value=3)
-property_type = st.sidebar.selectbox("🏠 Property Type", options=["h - House", "u - Unit", "t - Townhouse"])
-postcode = st.sidebar.number_input("📬 Postcode", min_value=3000, max_value=3999, value=3000)
-distance = st.sidebar.slider("📏 Distance to City (km)", min_value=0.0, max_value=50.0, value=10.2, step=0.1)
-prop_count = st.sidebar.number_input("🏘 Property Count in Suburb", min_value=100, max_value=10000, value=1000)
+# --- Sidebar Arabic Inputs ---
+bedrooms = st.sidebar.slider("عدد غرف النوم 🛏", min_value=1, max_value=10, value=3)
+duplex = st.sidebar.selectbox("نوع العقار 🏠", options=["دبلكس", "غير دبلكس"])
+district = st.sidebar.selectbox("الحي 📍", options=sorted(df["district"].unique()))
+property_age = st.sidebar.slider("عمر العقار 🏗️ (بالسنوات)", min_value=0, max_value=50, value=5)
+area = st.sidebar.slider("المساحة 📐 (م²)", min_value=100, max_value=1000, value=300)
 
-# Encode property type
-type_map = {"h - House": 0, "u - Unit": 1, "t - Townhouse": 2}
-type_encoded = type_map[property_type]
+# --- Encoding values ---
+duplex_encoded = 1 if duplex == "دبلكس" else 0
+district_mapping = {name: idx for idx, name in enumerate(df["district"].astype("category").cat.categories)}
+district_encoded = district_mapping.get(district, 0)
 
-# Prepare input array
-input_data = np.array([[rooms, type_encoded, postcode, distance, prop_count]])
+# Prepare input
+input_data = np.array([[bedrooms, duplex_encoded, district_encoded, property_age, area]])
 
-# Make prediction
+# Predict
 prediction = model.predict(input_data)[0]
-formatted_prediction = "${:,.2f}".format(prediction)
+formatted_prediction = "﷼ {:,.2f}".format(prediction)
 
-# Main Panel
+# Layout
 col1, col2 = st.columns([2, 3])
 
 with col1:
-    st.subheader("📊 Your Input Features")
+    st.subheader("📊 بياناتك المدخلة")
     input_df = pd.DataFrame({
-        'Feature': ['Rooms', 'Property Type', 'Postcode', 'Distance to City (km)', 'Property Count'],
-        'Value': [rooms, property_type.split(" - ")[1], postcode, distance, prop_count]
+        'الميزة': ['عدد الغرف', 'نوع العقار', 'الحي', 'عمر العقار', 'المساحة (م²)'],
+        'القيمة': [bedrooms, duplex, district, property_age, area]
     })
     st.table(input_df)
 
 with col2:
-    st.subheader("🔮 Predicted House Price")
+    st.subheader("🔮 السعر المتوقع")
     st.markdown(f"<h2 style='color:#4CAF50;'>{formatted_prediction}</h2>", unsafe_allow_html=True)
-    st.info("This is an estimate based on the selected features and our trained XGBoost model.")
+    st.info("هذا السعر المتوقع بناءً على البيانات المدخلة والنموذج المدرب.")
 
-# Additional Info
-# st.markdown("---")
-
-# fig, ax = plt.subplots()  # Create a Matplotlib figure
-# sns.histplot(df['Price'], kde=True, ax=ax)  # Plot on the created axis
-# ax.set_title("Distribution of House Prices")
-# ax.set_xlabel("Price")
-# ax.set_ylabel("Frequency")
-
-# # Display in Streamlit
-# st.pyplot(fig)  # Render the plot
-
-
-# st.markdown("---")
-# st.subheader("📈 Feature Importance")
-# fig, ax = plt.subplots(figsize=(8, 4))
-# plot_importance(model, ax=ax, max_num_features=5, color="#4285F4")
-# st.pyplot(fig)
-
+# Plots
 st.markdown("---")
-
-# --- Layout: Two Columns ---
-col1, col2 = st.columns(2)  # Creates 2 side-by-side columns
-
+col1, col2 = st.columns(2)
 
 with col1:
-    st.markdown("### Distribution of House Prices")
+    st.markdown("### توزيع أسعار العقارات")
     fig1, ax1 = plt.subplots(figsize=(6, 4))
-    sns.histplot(df["Price"], kde=True, ax=ax1)
-    ax1.set_xlabel("Price")
-    ax1.set_ylabel("Frequency")
+    sns.histplot(df["price"], kde=True, ax=ax1)
+    ax1.set_xlabel("السعر")
+    ax1.set_ylabel("عدد العقارات")
     st.pyplot(fig1)
 
-# --- Plot 2: Feature Importance (Right Side) ---
 with col2:
-    st.markdown("### 📈 Feature Importance")
+    st.markdown("### 📈 أهمية الخصائص في النموذج")
     fig2, ax2 = plt.subplots(figsize=(6, 4))
     plot_importance(model, ax=ax2, max_num_features=5, color="#4285F4")
     st.pyplot(fig2)
 
-
-st.markdown("---")  # Horizontal line after plots
-st.subheader("🧾 Dataset Sample")
+# Dataset sample
+st.markdown("---")
+st.subheader("🧾 معاينة البيانات")
 st.write(df.head())
 
 st.markdown("---")
-st.markdown("© 2025 House Price Predictor | Built By Deep Knowledge")
+st.markdown("© 2025 توقع أسعار العقارات | بناء بواسطة Streamlit و XGBoost")

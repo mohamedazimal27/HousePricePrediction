@@ -16,3 +16,4 @@ seaborn>=0.11
 
 # (Optional) If you want to launch the notebook via Jupyter
 jupyter>=1.0
+googletrans==4.0.0-rc1
