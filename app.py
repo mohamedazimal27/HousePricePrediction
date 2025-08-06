@@ -14,7 +14,7 @@ def local_css(file_name):
     with open(file_name) as f:
         st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-local_css("./Supervised_Learning/Real_project/House_price/style.css")  # Optional: Add custom styles in style.css
+local_css("style.css")  # Optional: Add custom styles in style.css
 
 # Title & Header
 st.title("🏡 The Accuarate Melbourne House Price Prediction App")
@@ -27,7 +27,7 @@ st.sidebar.markdown("Adjust the values below to predict house price.")
 # Load dataset (for feature info)
 @st.cache_data
 def load_data():
-    df = pd.read_csv("./Supervised_Learning/Real_project/House_price/MELBOURNE_HOUSE_PRICES_LESS.csv")
+    df = pd.read_csv("MELBOURNE_HOUSE_PRICES_LESS.csv")
     return df
 
 df = load_data()
@@ -35,7 +35,7 @@ df = load_data()
 # Load model
 @st.cache_resource
 def load_model():
-    model = joblib.load("./Supervised_Learning/Real_project/House_price/xgboost_house_price_model.pkl")
+    model = joblib.load("xgboost_house_price_model.pkl")
     return model
 
 model = load_model()
