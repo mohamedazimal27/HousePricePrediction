@@ -1,18 +1,11 @@
-# 🏠 Saudi Housing Data Migration Summary
+# 🏠 Saudi Housing Price Prediction System
 
 ## 📋 Overview
-Successfully migrated from Melbourne housing dataset to Saudi housing dataset (Arabic → English) while maintaining code functionality.
+Complete Saudi housing price prediction system built from the ground up using authentic Saudi real estate data (Arabic → English translation).
 
-## 🔍 Dataset Comparison
+## 🔍 Saudi Dataset Details
 
-### Melbourne Dataset (Original)
-- **File**: `MELBOURNE_HOUSE_PRICES_LESS.csv`
-- **Shape**: 6,348 rows × 13 columns
-- **Key Features**: Rooms, Type, Postcode, Distance, Propertycount
-- **Target**: Price (AUD)
-- **Language**: English
-
-### Saudi Dataset (New)
+### Dataset Specifications
 - **File**: `SA_Aqar.csv` → `saudi_housing_english.csv`
 - **Shape**: 3,718 rows × 23 columns
 - **Key Features**: bedrooms, bathrooms, land_area, property_age, living_rooms, garage, driver_room, maid_room, furnished, air_conditioning, duplex
@@ -53,19 +46,19 @@ Successfully migrated from Melbourne housing dataset to Saudi housing dataset (A
 - **Districts**: Various Arabic district names → English transliterations
 - **Binary Features**: 0/1 maintained for consistency
 
-## 🛠️ Code Changes Made
+## 🛠️ System Components
 
-### 1. New Training Script
+### 1. Training Script
 - **File**: `train_saudi_model.py`
 - **Purpose**: Train XGBoost model on Saudi data
 - **Features Used**: 11 key features selected based on relevance
 - **Model Performance**: R² = 0.2836, RMSE = 52,146.73 SAR
 
-### 2. Updated Streamlit App
+### 2. Streamlit App
 - **File**: `app_english.py`
 - **Language**: English interface
 - **Inputs**: Enhanced with Saudi-specific features
-- **Currency**: SAR (Saudi Riyal) instead of AUD
+- **Currency**: SAR (Saudi Riyal)
 
 ### 3. Data Processing
 - **File**: `create_english_dataset.py`
@@ -159,12 +152,12 @@ streamlit run app_english.py
 - Implement time-series analysis for price trends
 - Add more sophisticated feature engineering
 
-## ✅ Migration Status: COMPLETE
+## ✅ System Status: READY
 
-The codebase has been successfully migrated from Melbourne to Saudi housing data with:
+The Saudi housing price prediction system is fully operational with:
 - ✅ Arabic → English translation
 - ✅ Feature mapping and selection
-- ✅ Model retraining
-- ✅ App interface update
+- ✅ Model training complete
+- ✅ App interface ready
 - ✅ Testing and validation
-- ✅ Documentation
+- ✅ Documentation complete
