@@ -51,14 +51,22 @@ feature_info = load_features()
 model_features = feature_info['features']
 
 # --- Sidebar English Inputs ---
-bedrooms = st.sidebar.slider("Bedrooms 🛏", min_value=1, max_value=10, value=3)
-bathrooms = st.sidebar.slider("Bathrooms 🚿", min_value=1, max_value=10, value=2)
+# Get actual data ranges for validation
+max_bedrooms = int(df["bedrooms"].max())
+max_bathrooms = int(df["bathrooms"].max())
+max_property_age = int(df["property_age"].max())
+max_land_area = int(df["land_area"].max())
+max_living_rooms = int(df["living_rooms"].max())
+max_garage = int(df["garage"].max())
+
+bedrooms = st.sidebar.slider("Bedrooms 🛏", min_value=1, max_value=max_bedrooms, value=min(3, max_bedrooms))
+bathrooms = st.sidebar.slider("Bathrooms 🚿", min_value=1, max_value=max_bathrooms, value=min(2, max_bathrooms))
 duplex = st.sidebar.selectbox("Property Type 🏠", options=["Duplex", "Non-Duplex"])
 district = st.sidebar.selectbox("District 📍", options=sorted(df["district"].unique()))
-property_age = st.sidebar.slider("Property Age 🏗️ (years)", min_value=0, max_value=50, value=5)
-area = st.sidebar.slider("Land Area 📐 (m²)", min_value=100, max_value=1000, value=300)
-living_rooms = st.sidebar.slider("Living Rooms 🛋", min_value=0, max_value=5, value=1)
-garage = st.sidebar.selectbox("Garage 🚗", options=[0, 1, 2, 3])
+property_age = st.sidebar.slider("Property Age 🏗️ (years)", min_value=0, max_value=max_property_age, value=min(5, max_property_age))
+area = st.sidebar.slider("Land Area 📐 (m²)", min_value=100, max_value=min(max_land_area, 5000), value=min(300, max_land_area))
+living_rooms = st.sidebar.slider("Living Rooms 🛋", min_value=1, max_value=max_living_rooms, value=min(1, max_living_rooms))
+garage = st.sidebar.selectbox("Garage 🚗", options=list(range(max_garage + 1)))
 driver_room = st.sidebar.selectbox("Driver Room 👨‍💼", options=[0, 1])
 maid_room = st.sidebar.selectbox("Maid Room 👩‍💼", options=[0, 1])
 furnished = st.sidebar.selectbox("Furnished 🪑", options=[0, 1])
@@ -98,6 +106,19 @@ col1, col2 = st.columns([2, 3])
 
 with col1:
     st.subheader("📊 Your Input Data")
+    
+    # Check for extreme values
+    extreme_warnings = []
+    if bedrooms >= max_bedrooms * 0.9:
+        extreme_warnings.append(f"Bedrooms ({bedrooms}) is near maximum ({max_bedrooms})")
+    if bathrooms >= max_bathrooms * 0.9:
+        extreme_warnings.append(f"Bathrooms ({bathrooms}) is near maximum ({max_bathrooms})")
+    if area >= min(max_land_area, 5000) * 0.9:
+        extreme_warnings.append(f"Land area ({area} m²) is near maximum")
+    
+    if extreme_warnings:
+        st.warning("⚠️ **Extreme Values Detected:**\n" + "\n".join([f"- {warning}" for warning in extreme_warnings]))
+    
     input_df = pd.DataFrame({
         'Feature': ['Bedrooms', 'Bathrooms', 'Property Type', 'District', 
                    'Property Age', 'Land Area (m²)', 'Living Rooms', 'Garage',
@@ -112,6 +133,15 @@ with col2:
     st.subheader("🔮 Predicted Price")
     st.markdown(f"<h2 style='color:#4CAF50;'>{formatted_prediction}</h2>", unsafe_allow_html=True)
     st.info("This predicted price is based on your input and the trained model.")
+    
+    # Display data ranges
+    with st.expander("📊 Data Ranges Used for Training"):
+        st.write(f"- **Bedrooms**: 1-{max_bedrooms}")
+        st.write(f"- **Bathrooms**: 1-{max_bathrooms}")
+        st.write(f"- **Land Area**: 100-{min(max_land_area, 5000)} m²")
+        st.write(f"- **Property Age**: 0-{max_property_age} years")
+        st.write(f"- **Living Rooms**: 1-{max_living_rooms}")
+        st.write(f"- **Garage**: 0-{max_garage}")
 
 # Plots
 st.markdown("---")
