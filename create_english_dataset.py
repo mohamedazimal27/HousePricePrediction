@@ -72,7 +72,7 @@ df_en['district'] = df_en['district'].str.replace('حي', '').str.strip()
 df_en['district'] = df_en['district'].str.strip()
 
 # Save the English version
-df_en.to_csv('saudi_housing_english.csv', index=False)
+df_en.to_csv('data/processed/saudi_housing_english.csv', index=False)
 
 print("=== ENGLISH DATASET CREATED ===")
 print(f"Shape: {df_en.shape}")

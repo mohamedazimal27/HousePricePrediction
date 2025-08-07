@@ -17,7 +17,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 # Load data
-df = pd.read_csv('saudi_housing_english.csv')
+df = pd.read_csv('data/processed/saudi_housing_english.csv')
 
 print("=== FAST SAUDI HOUSING MODEL ===")
 print(f"Dataset shape: {df.shape}")

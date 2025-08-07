@@ -14,7 +14,7 @@ from sklearn.preprocessing import LabelEncoder
 import joblib
 
 # Load the English version of Saudi dataset
-df = pd.read_csv('saudi_housing_english.csv')
+df = pd.read_csv('data/processed/saudi_housing_english.csv')
 
 print("=== SAUDI HOUSING DATASET ===")
 print(f"Shape: {df.shape}")
@@ -124,20 +124,20 @@ plt.close()
 
 # Save Model
 print("\n=== SAVING MODEL ===")
-joblib.dump(model, 'xgboost_saudi_house_price_model.pkl')
-print("✅ Model saved as 'xgboost_saudi_house_price_model.pkl'")
+joblib.dump(model, 'models/saved/xgboost_saudi_house_price_model.pkl')
+print("✅ Model saved as 'models/saved/xgboost_saudi_house_price_model.pkl'")
 
 # Save feature names for later use
 feature_info = {
     'features': available_features,
     'feature_importance': dict(zip(available_features, model.feature_importances_))
 }
-joblib.dump(feature_info, 'saudi_model_features.pkl')
+joblib.dump(feature_info, 'models/saved/saudi_model_features.pkl')
 
 print("\n=== TRAINING COMPLETE ===")
 print("Files created:")
-print("- xgboost_saudi_house_price_model.pkl")
-print("- saudi_model_features.pkl")
+print("- models/saved/xgboost_saudi_house_price_model.pkl")
+print("- models/saved/saudi_model_features.pkl")
 print("- feature_importance_saudi.png")
 print("- actual_vs_predicted_saudi.png")
 print("- price_distribution_saudi.png")

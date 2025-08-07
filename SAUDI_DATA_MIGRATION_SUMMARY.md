@@ -6,7 +6,7 @@ Complete Saudi housing price prediction system built from the ground up using au
 ## 🔍 Saudi Dataset Details
 
 ### Dataset Specifications
-- **File**: `SA_Aqar.csv` → `saudi_housing_english.csv`
+- **File**: `SA_Aqar.csv` → `data/processed/saudi_housing_english.csv`
 - **Shape**: 3,718 rows × 23 columns
 - **Key Features**: bedrooms, bathrooms, land_area, property_age, living_rooms, garage, driver_room, maid_room, furnished, air_conditioning, duplex
 - **Target**: price (SAR)
@@ -63,7 +63,7 @@ Complete Saudi housing price prediction system built from the ground up using au
 ### 3. Data Processing
 - **File**: `create_english_dataset.py`
 - **Function**: Automated Arabic→English translation
-- **Output**: `saudi_housing_english.csv`
+- **Output**: `data/processed/saudi_housing_english.csv`
 
 ## 📊 Feature Engineering
 
@@ -103,9 +103,9 @@ Complete Saudi housing price prediction system built from the ground up using au
 ## 🚀 Files Created
 
 ### Core Files
-- `saudi_housing_english.csv` - Cleaned English dataset
-- `xgboost_saudi_house_price_model.pkl` - Trained model
-- `saudi_model_features.pkl` - Feature information
+- `data/processed/saudi_housing_english.csv` - Cleaned English dataset
+- `models/saved/xgboost_saudi_house_price_model.pkl` - Trained model
+- `models/saved/saudi_model_features.pkl` - Feature information
 
 ### Scripts
 - `train_saudi_model.py` - Model training script

@@ -16,7 +16,7 @@ def test_data_integrity():
     
     # Load datasets
     try:
-        df_english = pd.read_csv('saudi_housing_english.csv')
+        df_english = pd.read_csv('data/processed/saudi_housing_english.csv')
         print("✅ English dataset loaded successfully")
     except Exception as e:
         print(f"❌ Failed to load English dataset: {e}")
@@ -51,14 +51,14 @@ def test_model_loading():
     print("\n=== Testing Model Loading ===")
     
     try:
-        model = joblib.load('xgboost_saudi_house_price_model.pkl')
+        model = joblib.load('models/saved/xgboost_saudi_house_price_model.pkl')
         print("✅ Model loaded successfully")
     except Exception as e:
         print(f"❌ Failed to load model: {e}")
         return False
     
     try:
-        feature_info = joblib.load('saudi_model_features.pkl')
+        feature_info = joblib.load('models/saved/saudi_model_features.pkl')
         print("✅ Feature info loaded successfully")
         print(f"Features: {feature_info['features']}")
     except Exception as e:
@@ -73,9 +73,9 @@ def test_prediction_pipeline():
     
     try:
         # Load model and data
-        model = joblib.load('xgboost_saudi_house_price_model.pkl')
-        feature_info = joblib.load('saudi_model_features.pkl')
-        df = pd.read_csv('saudi_housing_english.csv')
+        model = joblib.load('models/saved/xgboost_saudi_house_price_model.pkl')
+        feature_info = joblib.load('models/saved/saudi_model_features.pkl')
+        df = pd.read_csv('data/processed/saudi_housing_english.csv')
         
         features = feature_info['features']
         
@@ -132,7 +132,7 @@ def test_streamlit_app():
     
     try:
         # Test if required files exist
-        required_files = ['app_english.py', 'style.css', 'saudi_housing_english.csv']
+        required_files = ['app_english.py', 'style.css', 'data/processed/saudi_housing_english.csv']
         for file in required_files:
             if not os.path.exists(file):
                 print(f"❌ Missing file: {file}")
@@ -141,7 +141,7 @@ def test_streamlit_app():
         print("✅ All required files exist")
         
         # Test if model files exist
-        model_files = ['xgboost_saudi_house_price_model.pkl', 'saudi_model_features.pkl']
+        model_files = ['models/saved/xgboost_saudi_house_price_model.pkl', 'models/saved/saudi_model_features.pkl']
         for file in model_files:
             if not os.path.exists(file):
                 print(f"❌ Missing model file: {file}")
@@ -163,7 +163,7 @@ def test_column_mapping():
         # Load original Arabic dataset if exists
         if os.path.exists('saudi_housing_data.csv'):
             df_arabic = pd.read_csv('saudi_housing_data.csv')
-            df_english = pd.read_csv('saudi_housing_english.csv')
+            df_english = pd.read_csv('data/processed/saudi_housing_english.csv')
             
             print(f"Arabic columns: {len(df_arabic.columns)}")
             print(f"English columns: {len(df_english.columns)}")

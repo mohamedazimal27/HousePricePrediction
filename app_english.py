@@ -31,21 +31,21 @@ st.sidebar.header("🔍 Enter Property Details")
 # Load English dataset
 @st.cache_data
 def load_data():
-    return pd.read_csv("saudi_housing_english.csv")
+    return pd.read_csv("data/processed/saudi_housing_english.csv")
 
 df = load_data()
 
 # Load trained model
 @st.cache_resource
 def load_model():
-    return joblib.load("xgboost_saudi_house_price_model.pkl")
+    return joblib.load("models/saved/xgboost_saudi_house_price_model.pkl")
 
 model = load_model()
 
 # Load feature info
 @st.cache_resource
 def load_features():
-    return joblib.load("saudi_model_features.pkl")
+    return joblib.load("models/saved/saudi_model_features.pkl")
 
 feature_info = load_features()
 model_features = feature_info['features']
