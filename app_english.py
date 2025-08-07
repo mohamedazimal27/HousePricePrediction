@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import joblib
 from xgboost import plot_importance
+from sklearn.preprocessing import LabelEncoder
 
 # Set Streamlit config
 st.set_page_config(page_title="🏡 Saudi House Price Predictor", layout="wide", page_icon="🏠")
@@ -38,17 +39,19 @@ df = load_data()
 # Load trained model
 @st.cache_resource
 def load_model():
-    return joblib.load("models/saved/xgboost_saudi_house_price_model.pkl")
+    return joblib.load("models/saved/presentation_model.pkl")
 
 model = load_model()
 
-# Load feature info
+# Load feature info and encoders
 @st.cache_resource
-def load_features():
-    return joblib.load("models/saved/saudi_model_features.pkl")
+def load_features_and_encoders():
+    features = joblib.load("models/saved/presentation_features.pkl")
+    encoders = joblib.load("models/saved/presentation_encoders.pkl")
+    scaler = joblib.load("models/saved/presentation_scaler.pkl")
+    return features, encoders, scaler
 
-feature_info = load_features()
-model_features = feature_info['features']
+features, encoders, scaler = load_features_and_encoders()
 
 # --- Sidebar English Inputs ---
 # Get actual data ranges for validation
@@ -63,6 +66,8 @@ bedrooms = st.sidebar.slider("Bedrooms 🛏", min_value=1, max_value=max_bedroom
 bathrooms = st.sidebar.slider("Bathrooms 🚿", min_value=1, max_value=max_bathrooms, value=min(2, max_bathrooms))
 duplex = st.sidebar.selectbox("Property Type 🏠", options=["Duplex", "Non-Duplex"])
 district = st.sidebar.selectbox("District 📍", options=sorted(df["district"].unique()))
+city = st.sidebar.selectbox("City 🏙️", options=sorted(df["city"].unique()))
+front_direction = st.sidebar.selectbox("Front Direction 🧭", options=sorted(df["front_direction"].unique()))
 property_age = st.sidebar.slider("Property Age 🏗️ (years)", min_value=0, max_value=max_property_age, value=min(5, max_property_age))
 area = st.sidebar.slider("Land Area 📐 (m²)", min_value=100, max_value=min(max_land_area, 5000), value=min(300, max_land_area))
 living_rooms = st.sidebar.slider("Living Rooms 🛋", min_value=1, max_value=max_living_rooms, value=min(1, max_living_rooms))
@@ -71,34 +76,70 @@ driver_room = st.sidebar.selectbox("Driver Room 👨‍💼", options=[0, 1])
 maid_room = st.sidebar.selectbox("Maid Room 👩‍💼", options=[0, 1])
 furnished = st.sidebar.selectbox("Furnished 🪑", options=[0, 1])
 ac = st.sidebar.selectbox("Air Conditioning ❄️", options=[0, 1])
+roof = st.sidebar.selectbox("Roof 🏠", options=[0, 1])
+pool = st.sidebar.selectbox("Pool 🏊", options=[0, 1])
+front_yard = st.sidebar.selectbox("Front Yard 🌳", options=[0, 1])
+basement = st.sidebar.selectbox("Basement 🏠", options=[0, 1])
+stairs = st.sidebar.selectbox("Stairs 🪜", options=[0, 1])
+elevator = st.sidebar.selectbox("Elevator 🚠", options=[0, 1])
+fireplace = st.sidebar.selectbox("Fireplace 🔥", options=[0, 1])
 
 # --- Encoding values ---
 duplex_encoded = 1 if duplex == "Duplex" else 0
 
-# Create district mapping for encoding
-district_mapping = {name: idx for idx, name in enumerate(df["district"].astype("category").cat.categories)}
-district_encoded = district_mapping.get(district, 0)
+# Encode categorical variables using the saved encoders
+try:
+    city_encoded = encoders['city'].transform([city])[0]
+except ValueError:
+    city_encoded = 0  # Default for unknown categories
+
+try:
+    district_encoded = encoders['district'].transform([district])[0]
+except ValueError:
+    district_encoded = 0  # Default for unknown categories
+
+try:
+    front_direction_encoded = encoders['front_direction'].transform([front_direction])[0]
+except ValueError:
+    front_direction_encoded = 0  # Default for unknown categories
+
+# Calculate derived features
+total_rooms = bedrooms + bathrooms + living_rooms
+luxury_score = garage + driver_room + maid_room + furnished + ac + roof + pool + front_yard + basement + duplex_encoded + stairs + elevator + fireplace
 
 # Prepare input array based on model features
 input_dict = {
-    'bedrooms': bedrooms,
-    'bathrooms': bathrooms,
+    'city_encoded': city_encoded,
+    'district_encoded': district_encoded,
+    'front_direction_encoded': front_direction_encoded,
     'land_area': area,
     'property_age': property_age,
+    'bedrooms': bedrooms,
+    'bathrooms': bathrooms,
     'living_rooms': living_rooms,
     'garage': garage,
     'driver_room': driver_room,
     'maid_room': maid_room,
     'furnished': furnished,
     'air_conditioning': ac,
-    'duplex': duplex_encoded
+    'roof': roof,
+    'pool': pool,
+    'front_yard': front_yard,
+    'basement': basement,
+    'duplex': duplex_encoded,
+    'stairs': stairs,
+    'elevator': elevator,
+    'fireplace': fireplace,
+    'total_rooms': total_rooms,
+    'luxury_score': luxury_score
 }
 
-# Create input array in correct order
-input_data = np.array([[input_dict[feature] for feature in model_features]])
+# Create input array in correct order and scale it
+input_data = np.array([[input_dict[feature] for feature in features]])
+input_data_scaled = scaler.transform(input_data)
 
 # Predict
-prediction = model.predict(input_data)[0]
+prediction = model.predict(input_data_scaled)[0]
 formatted_prediction = "SAR {:,.2f}".format(prediction)
 
 # Layout
@@ -119,13 +160,18 @@ with col1:
     if extreme_warnings:
         st.warning("⚠️ **Extreme Values Detected:**\n" + "\n".join([f"- {warning}" for warning in extreme_warnings]))
     
+    # Create input dataframe with proper data types
     input_df = pd.DataFrame({
-        'Feature': ['Bedrooms', 'Bathrooms', 'Property Type', 'District', 
+        'Feature': ['City', 'District', 'Front Direction', 'Bedrooms', 'Bathrooms', 'Property Type', 
                    'Property Age', 'Land Area (m²)', 'Living Rooms', 'Garage',
-                   'Driver Room', 'Maid Room', 'Furnished', 'Air Conditioning'],
-        'Value': [bedrooms, bathrooms, duplex, district, property_age, area,
-                 living_rooms, garage, driver_room, maid_room, 
-                 'Yes' if furnished else 'No', 'Yes' if ac else 'No']
+                   'Driver Room', 'Maid Room', 'Furnished', 'Air Conditioning',
+                   'Roof', 'Pool', 'Front Yard', 'Basement', 'Stairs', 'Elevator', 'Fireplace'],
+        'Value': [str(city), str(district), str(front_direction), str(bedrooms), str(bathrooms), str(duplex), str(property_age), str(area),
+                 str(living_rooms), str(garage), str(driver_room), str(maid_room), 
+                 'Yes' if furnished else 'No', 'Yes' if ac else 'No',
+                 'Yes' if roof else 'No', 'Yes' if pool else 'No', 'Yes' if front_yard else 'No',
+                 'Yes' if basement else 'No', 'Yes' if stairs else 'No', 'Yes' if elevator else 'No',
+                 'Yes' if fireplace else 'No']
     })
     st.table(input_df)
 
@@ -157,17 +203,20 @@ with col1:
 
 with col2:
     st.markdown("### 📈 Feature Importance")
-    feature_importance = pd.DataFrame({
-        'feature': model_features,
-        'importance': model.feature_importances_
-    }).sort_values('importance', ascending=False)
-    
-    fig2, ax2 = plt.subplots(figsize=(6, 4))
-    sns.barplot(data=feature_importance, x='importance', y='feature', ax=ax2)
-    ax2.set_title("Feature Importance")
-    ax2.set_xlabel("Importance")
-    ax2.set_ylabel("Features")
-    st.pyplot(fig2)
+    if hasattr(model, 'feature_importances_'):
+        feature_importance = pd.DataFrame({
+            'feature': features,
+            'importance': model.feature_importances_
+        }).sort_values('importance', ascending=False)
+        
+        fig2, ax2 = plt.subplots(figsize=(6, 4))
+        sns.barplot(data=feature_importance.head(15), x='importance', y='feature', ax=ax2)
+        ax2.set_title("Feature Importance")
+        ax2.set_xlabel("Importance")
+        ax2.set_ylabel("Features")
+        st.pyplot(fig2)
+    else:
+        st.info("Feature importance not available for this model type")
 
 # Dataset sample
 st.markdown("---")

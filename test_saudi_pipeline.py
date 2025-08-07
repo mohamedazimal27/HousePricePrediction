@@ -51,16 +51,16 @@ def test_model_loading():
     print("\n=== Testing Model Loading ===")
     
     try:
-        model = joblib.load('models/saved/xgboost_saudi_house_price_model.pkl')
-        print("✅ Model loaded successfully")
+        model = joblib.load('models/saved/presentation_model.pkl')
+        print("✅ Presentation model loaded successfully")
     except Exception as e:
-        print(f"❌ Failed to load model: {e}")
+        print(f"❌ Failed to load presentation model: {e}")
         return False
     
     try:
-        feature_info = joblib.load('models/saved/saudi_model_features.pkl')
+        feature_info = joblib.load('models/saved/presentation_features.pkl')
         print("✅ Feature info loaded successfully")
-        print(f"Features: {feature_info['features']}")
+        print(f"Features: {feature_info}")
     except Exception as e:
         print(f"❌ Failed to load feature info: {e}")
         return False
@@ -73,11 +73,9 @@ def test_prediction_pipeline():
     
     try:
         # Load model and data
-        model = joblib.load('models/saved/xgboost_saudi_house_price_model.pkl')
-        feature_info = joblib.load('models/saved/saudi_model_features.pkl')
+        model = joblib.load('models/saved/presentation_model.pkl')
+        features = joblib.load('models/saved/presentation_features.pkl')
         df = pd.read_csv('data/processed/saudi_housing_english.csv')
-        
-        features = feature_info['features']
         
         # Test with median values
         median_values = {
@@ -91,11 +89,16 @@ def test_prediction_pipeline():
             'maid_room': 0,
             'furnished': 0,
             'air_conditioning': 1,
-            'duplex': 0
+            'duplex': 0,
+            'city_encoded': 0,
+            'district_encoded': 0,
+            'front_direction_encoded': 0,
+            'total_rooms': int(df['bedrooms'].median() + df['bathrooms'].median() + df['living_rooms'].median()),
+            'luxury_score': 0
         }
         
         # Create input array
-        input_data = np.array([[median_values[feature] for feature in features]])
+        input_data = np.array([[median_values.get(feature, 0) for feature in features]])
         
         # Make prediction
         prediction = model.predict(input_data)[0]
@@ -113,10 +116,15 @@ def test_prediction_pipeline():
             'maid_room': 1,
             'furnished': 1,
             'air_conditioning': 1,
-            'duplex': 1
+            'duplex': 1,
+            'city_encoded': 0,
+            'district_encoded': 0,
+            'front_direction_encoded': 0,
+            'total_rooms': int(df['bedrooms'].max() + df['bathrooms'].max() + df['living_rooms'].max()),
+            'luxury_score': 10
         }
         
-        input_extreme = np.array([[extreme_values[feature] for feature in features]])
+        input_extreme = np.array([[extreme_values.get(feature, 0) for feature in features]])
         prediction_extreme = model.predict(input_extreme)[0]
         print(f"✅ Extreme values prediction: SAR {prediction_extreme:,.2f}")
         
@@ -141,7 +149,7 @@ def test_streamlit_app():
         print("✅ All required files exist")
         
         # Test if model files exist
-        model_files = ['models/saved/xgboost_saudi_house_price_model.pkl', 'models/saved/saudi_model_features.pkl']
+        model_files = ['models/saved/presentation_model.pkl', 'models/saved/presentation_features.pkl']
         for file in model_files:
             if not os.path.exists(file):
                 print(f"❌ Missing model file: {file}")
