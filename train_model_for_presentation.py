@@ -5,6 +5,8 @@ Simplified training script for Saudi housing data - Optimized for presentation
 
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
@@ -118,8 +120,56 @@ def main():
     print(f"   Mean Price: {y.mean():,.0f} SAR")
     print(f"   Error Rate: {(rmse/y.mean()*100):.2f}%")
     
+    # Create visualizations
+    print("\n6. Creating visualizations...")
+    
+    # Create outputs directory if it doesn't exist
+    import os
+    if not os.path.exists('outputs'):
+        os.makedirs('outputs')
+    
+    # 1. Feature Importance
+    plt.figure(figsize=(12, 8))
+    if hasattr(model, 'feature_importances_'):
+        feature_importance = pd.DataFrame({
+            'feature': available_features,
+            'importance': model.feature_importances_
+        }).sort_values('importance', ascending=False)
+        
+        sns.barplot(data=feature_importance.head(15), x='importance', y='feature')
+        plt.title('Feature Importance - Saudi Housing Model')
+        plt.xlabel('Importance')
+        plt.ylabel('Features')
+        plt.tight_layout()
+        plt.savefig('outputs/feature_importance_saudi.png', dpi=300, bbox_inches='tight')
+        plt.close()
+        print("   - Feature importance chart saved")
+    
+    # 2. Actual vs Predicted
+    plt.figure(figsize=(10, 8))
+    plt.scatter(y_test, y_pred, alpha=0.5)
+    plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'r--', lw=2)
+    plt.xlabel('Actual Price (SAR)')
+    plt.ylabel('Predicted Price (SAR)')
+    plt.title(f'Actual vs Predicted House Prices (R² = {r2:.3f})')
+    plt.tight_layout()
+    plt.savefig('outputs/actual_vs_predicted_saudi.png', dpi=300, bbox_inches='tight')
+    plt.close()
+    print("   - Actual vs Predicted chart saved")
+    
+    # 3. Price Distribution
+    plt.figure(figsize=(10, 6))
+    sns.histplot(df['price'], kde=True)
+    plt.title('Distribution of House Prices - Saudi Data')
+    plt.xlabel('Price (SAR)')
+    plt.ylabel('Frequency')
+    plt.tight_layout()
+    plt.savefig('outputs/price_distribution_saudi.png', dpi=300, bbox_inches='tight')
+    plt.close()
+    print("   - Price distribution chart saved")
+    
     # Save model components
-    print("\n6. Saving model components...")
+    print("\n7. Saving model components...")
     joblib.dump(model, 'models/saved/presentation_model.pkl')
     joblib.dump(scaler, 'models/saved/presentation_scaler.pkl')
     joblib.dump(available_features, 'models/saved/presentation_features.pkl')
@@ -133,6 +183,9 @@ def main():
     print("- models/saved/presentation_scaler.pkl")
     print("- models/saved/presentation_features.pkl")
     print("- models/saved/presentation_encoders.pkl")
+    print("- outputs/feature_importance_saudi.png")
+    print("- outputs/actual_vs_predicted_saudi.png")
+    print("- outputs/price_distribution_saudi.png")
     
     # Show improvement
     print(f"\n=== MODEL IMPROVEMENT ===")
