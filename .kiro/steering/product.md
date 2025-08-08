@@ -2,10 +2,10 @@
 
 ## Saudi Housing Price Prediction System
 
-A machine learning system for predicting housing prices in Saudi Arabia using real estate data. The system achieves **77.47% accuracy** (R² score) in predicting property values based on key features.
+A machine learning system for predicting housing prices in Saudi Arabia using real estate data. The system achieves **81.07% accuracy** (R² score) in predicting property values based on key features.
 
 ### Key Features
-- **High accuracy**: 77.47% R² score on test data
+- **High accuracy**: 81.07% R² score on test data
 - **Real Saudi housing data**: 3,718 property listings with English translation
 - **Interactive web interface**: Streamlit-based application for easy predictions
 - **Comprehensive feature engineering**: Enhanced model with derived features

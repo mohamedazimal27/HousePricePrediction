@@ -51,14 +51,14 @@ def test_model_loading():
     print("\n=== Testing Model Loading ===")
     
     try:
-        model = joblib.load('models/saved/presentation_model.pkl')
-        print("✅ Presentation model loaded successfully")
+        model = joblib.load('models/saved/model.pkl')
+        print("✅ Model loaded successfully")
     except Exception as e:
-        print(f"❌ Failed to load presentation model: {e}")
+        print(f"❌ Failed to load model: {e}")
         return False
     
     try:
-        feature_info = joblib.load('models/saved/presentation_features.pkl')
+        feature_info = joblib.load('models/saved/features.pkl')
         print("✅ Feature info loaded successfully")
         print(f"Features: {feature_info}")
     except Exception as e:
@@ -73,8 +73,8 @@ def test_prediction_pipeline():
     
     try:
         # Load model and data
-        model = joblib.load('models/saved/presentation_model.pkl')
-        features = joblib.load('models/saved/presentation_features.pkl')
+        model = joblib.load('models/saved/model.pkl')
+        features = joblib.load('models/saved/features.pkl')
         df = pd.read_csv('data/processed/saudi_housing_english.csv')
         
         # Test with median values
@@ -140,7 +140,7 @@ def test_streamlit_app():
     
     try:
         # Test if required files exist
-        required_files = ['app_english.py', 'style.css', 'data/processed/saudi_housing_english.csv']
+        required_files = ['app.py', 'style.css', 'data/processed/saudi_housing_english.csv']
         for file in required_files:
             if not os.path.exists(file):
                 print(f"❌ Missing file: {file}")
@@ -149,7 +149,7 @@ def test_streamlit_app():
         print("✅ All required files exist")
         
         # Test if model files exist
-        model_files = ['models/saved/presentation_model.pkl', 'models/saved/presentation_features.pkl']
+        model_files = ['models/saved/model.pkl', 'models/saved/features.pkl']
         for file in model_files:
             if not os.path.exists(file):
                 print(f"❌ Missing model file: {file}")

@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![XGBoost](https://img.shields.io/badge/XGBoost-Model-orange)](https://xgboost.readthedocs.io/)
 
-A machine learning system for predicting housing prices in Saudi Arabia using real estate data. This project achieves **77.47% accuracy** (R² score) in predicting property values based on key features.
+A machine learning system for predicting housing prices in Saudi Arabia using real estate data. This project achieves **81.07% accuracy** (R² score) in predicting property values based on key features.
 
 ## 📋 Table of Contents
 - [Project Overview](#-project-overview)
@@ -20,10 +20,11 @@ A machine learning system for predicting housing prices in Saudi Arabia using re
 This project predicts housing prices in Saudi Arabia using machine learning techniques. It processes real Saudi real estate data, applies advanced feature engineering, and trains an XGBoost model to predict property values with high accuracy.
 
 ### Key Features:
-- **77.47% accuracy** (R² score) on test data
+- **81.07% accuracy** (R² score) on test data
 - **Real Saudi housing data** with English translation
 - **Streamlit web interface** for easy interaction
-- **Comprehensive feature engineering** for improved predictions
+- **Advanced feature engineering** with domain expertise
+- **Robust data processing** with outlier handling
 
 ## 📊 Dataset
 
@@ -42,21 +43,25 @@ The dataset contains 3,718 Saudi property listings with 23 features including:
 
 ## 📈 Model Performance
 
-### Presentation Model (77.47% accuracy) ⭐
-The enhanced model significantly improved accuracy through:
+### Current Model (81.07% accuracy) ⭐
+The model achieves high accuracy through:
 - **Advanced feature engineering**:
-  - Total rooms calculation
+  - Total rooms and room density calculations
   - Luxury score based on amenities
   - Price per square meter
-- **Categorical encoding** for city, district, and direction
-- **Feature scaling** with StandardScaler
-- **Model optimization** with XGBoost
+  - Property age and size categories
+- **Robust data processing** with outlier handling
+- **Enhanced categorical encoding** for location features
+- **RobustScaler** for better outlier resistance
+- **Cross-validation** for reliable performance assessment
 
 ### Performance Metrics
-| Model | R² Score | RMSE (SAR) | MAE (SAR) | Error Rate |
-|-------|----------|------------|-----------|-------------|
-| Presentation | 77.47% | 15,716 | 7,566 | 19.60% |
-| Original | 28.36% | 52,147 | 19,735 | 59.67% |
+| Metric | Value | Description |
+|--------|-------|-------------|
+| **R² Score** | **81.07%** | Model accuracy |
+| **RMSE** | 18,767 SAR | Root mean square error |
+| **MAE** | 8,026 SAR | Mean absolute error |
+| **MAPE** | 10.57% | Mean absolute percentage error |
 
 ### Feature Importance (Top 10)
 1. **land_area** - ~40%
@@ -99,13 +104,13 @@ pip install -r requirements.txt
 
 ### Training the Model
 ```bash
-# Train the presentation model (recommended)
-python train_model_for_presentation.py
+# Train the model
+python train_model.py
 ```
 
 ### Checking Model Accuracy
 ```bash
-python check_presentation_model.py
+python check_model.py
 ```
 
 ### Running Tests
@@ -117,8 +122,8 @@ python test_saudi_pipeline.py
 
 ### Launch the App
 ```bash
-# English interface (recommended)
-streamlit run app_english.py
+# Launch the web application
+streamlit run app.py
 ```
 
 ### Web Features
@@ -136,20 +141,20 @@ Access the application at: `http://localhost:8501`
 ml/
 ├── README.md
 ├── requirements.txt
-├── train_model_for_presentation.py    # Training script for presentation
-├── check_presentation_model.py        # Model accuracy verification
+├── train_model.py                     # Model training script
+├── check_model.py                     # Model accuracy verification
 ├── test_saudi_pipeline.py             # Test suite
-├── app_english.py                     # English web interface
+├── app.py                             # Web application interface
 ├── style.css                          # Web styling
 ├── data/
 │   └── processed/
 │       └── saudi_housing_english.csv  # Main dataset
 ├── models/
 │   └── saved/
-│       ├── presentation_model.pkl     # Trained model
-│       ├── presentation_scaler.pkl    # Feature scaler
-│       ├── presentation_features.pkl  # Feature list
-│       └── presentation_encoders.pkl  # Categorical encoders
+│       ├── model.pkl                  # Trained XGBoost model
+│       ├── scaler.pkl                 # RobustScaler for features
+│       ├── features.pkl               # Feature list
+│       └── encoders.pkl               # Categorical encoders
 └── outputs/
     └── reports/
 ```

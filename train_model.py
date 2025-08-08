@@ -223,9 +223,9 @@ def create_visualizations(model, features, df, metrics):
     print("   - Enhanced visualizations saved")
 
 def main():
-    """Main training pipeline with improvements"""
-    print("=== IMPROVED SAUDI HOUSING PRICE PREDICTION MODEL ===")
-    print("Enhanced with better data cleaning and feature engineering")
+    """Main training pipeline"""
+    print("=== SAUDI HOUSING PRICE PREDICTION MODEL TRAINING ===")
+    print("Advanced ML model with enhanced data processing and feature engineering")
     print()
     
     # Load and clean data
@@ -268,23 +268,23 @@ def main():
     # Create visualizations
     create_visualizations(model, features, df, metrics)
     
-    # Save improved model
-    print("\n7. Saving improved model components...")
-    joblib.dump(model, 'models/saved/improved_model.pkl')
-    joblib.dump(scaler, 'models/saved/improved_scaler.pkl')
-    joblib.dump(features, 'models/saved/improved_features.pkl')
-    joblib.dump(encoders, 'models/saved/improved_encoders.pkl')
+    # Save model components
+    print("\n7. Saving model components...")
+    joblib.dump(model, 'models/saved/model.pkl')
+    joblib.dump(scaler, 'models/saved/scaler.pkl')
+    joblib.dump(features, 'models/saved/features.pkl')
+    joblib.dump(encoders, 'models/saved/encoders.pkl')
     
     print("\n=== TRAINING COMPLETE ===")
-    print(f"Improved model saved with {metrics['r2']*100:.2f}% accuracy!")
+    print(f"Model saved with {metrics['r2']*100:.2f}% accuracy!")
     print()
-    print("Improvements made:")
-    print("- Better outlier handling with robust scaling")
+    print("Model features:")
+    print("- Robust outlier handling with RobustScaler")
     print("- Enhanced feature engineering with domain knowledge")
-    print("- Cross-validation for model assessment")
-    print("- Stratified train-test split")
-    print("- More conservative data cleaning")
-    print("- Additional evaluation metrics")
+    print("- Cross-validation for reliable model assessment")
+    print("- Stratified train-test split for balanced evaluation")
+    print("- Conservative data cleaning for better generalization")
+    print("- Comprehensive evaluation metrics")
 
 if __name__ == "__main__":
     main()

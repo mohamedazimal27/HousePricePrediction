@@ -15,10 +15,10 @@ saudi-housing-prediction/
 ├── models/
 │   ├── configs/                       # Model configuration files
 │   └── saved/                         # Serialized model artifacts
-│       ├── presentation_model.pkl     # Trained XGBoost model
-│       ├── presentation_scaler.pkl    # Feature scaler
-│       ├── presentation_features.pkl  # Feature list
-│       └── presentation_encoders.pkl  # Categorical encoders
+│       ├── model.pkl                  # Trained XGBoost model
+│       ├── scaler.pkl                 # RobustScaler for features
+│       ├── features.pkl               # Feature list
+│       └── encoders.pkl               # Categorical encoders
 │
 ├── outputs/                           # Generated visualizations and reports
 │
@@ -26,19 +26,19 @@ saudi-housing-prediction/
 │
 ├── venv/                             # Virtual environment (gitignored)
 │
-├── app_english.py                    # Streamlit web application
-├── train_model_for_presentation.py   # Model training script
-├── check_presentation_model.py       # Model validation script
+├── app.py                            # Streamlit web application
+├── train_model.py                    # Model training script
+├── check_model.py                    # Model validation script
 └── test_saudi_pipeline.py           # Comprehensive test suite
 ```
 
 ## File Naming Conventions
 
 ### Scripts
-- `train_model_*.py`: Model training scripts
-- `check_*.py`: Validation and testing scripts  
+- `train_model.py`: Model training script
+- `check_model.py`: Model validation script
 - `test_*.py`: Test suites
-- `app_*.py`: Web application files
+- `app.py`: Web application file
 
 ### Data Files
 - Use descriptive names with language suffix: `*_english.csv`
@@ -46,11 +46,10 @@ saudi-housing-prediction/
 - Raw data would go in `data/raw/` (not present in this project)
 
 ### Model Artifacts
-- `*_model.pkl`: Trained models
-- `*_scaler.pkl`: Feature scalers
-- `*_features.pkl`: Feature lists
-- `*_encoders.pkl`: Categorical encoders
-- Use consistent prefixes (e.g., `presentation_*`)
+- `model.pkl`: Trained XGBoost model
+- `scaler.pkl`: RobustScaler for feature scaling
+- `features.pkl`: Feature list for model input
+- `encoders.pkl`: Categorical encoders for preprocessing
 
 ## Code Organization Patterns
 
@@ -61,11 +60,12 @@ saudi-housing-prediction/
 - Generate visualizations to `outputs/`
 - Include comprehensive logging and metrics
 
-### Web Applications
+### Web Application
 - Load models from `models/saved/`
 - Use caching decorators (`@st.cache_data`, `@st.cache_resource`)
 - Separate styling in external CSS files
-- Include data validation and error handling
+- Include comprehensive error handling and input validation
+- Provide user feedback with confidence scores and warnings
 
 ### Test Files
 - Test data integrity, model loading, and prediction pipeline
@@ -76,7 +76,7 @@ saudi-housing-prediction/
 1. Data preprocessing → `data/processed/`
 2. Model training → `models/saved/`
 3. Model validation → console output + `outputs/`
-4. Web app development → `app_*.py`
+4. Web app development → `app.py`
 5. Testing → `test_*.py`
 
 ## Best Practices

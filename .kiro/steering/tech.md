@@ -41,11 +41,11 @@ pip install -r requirements.txt
 
 ### Model Training
 ```bash
-# Train the presentation model (recommended)
-python train_model_for_presentation.py
+# Train the model
+python train_model.py
 
 # Check model accuracy
-python check_presentation_model.py
+python check_model.py
 ```
 
 ### Testing
@@ -57,7 +57,7 @@ python test_saudi_pipeline.py
 ### Web Application
 ```bash
 # Launch Streamlit app
-streamlit run app_english.py
+streamlit run app.py
 
 # Access at: http://localhost:8501
 ```

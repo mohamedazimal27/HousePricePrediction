@@ -31,15 +31,11 @@ def local_css(file_name):
 local_css("style.css")
 
 # Title & Header
-st.title("🏡 Saudi House Price Predictor - Improved")
-st.markdown("Enhanced model with better accuracy and data handling")
+st.title("🏡 Saudi House Price Predictor")
+st.markdown("Machine learning model with 81.07% accuracy for Saudi real estate")
 
-# Sidebar for model selection
-st.sidebar.header("🔧 Model Selection")
-model_choice = st.sidebar.selectbox(
-    "Choose Model Version",
-    ["Presentation Model (77.47%)", "Improved Model (if available)"]
-)
+# Sidebar header
+st.sidebar.header("🔍 Enter Property Details")
 
 # Load data with error handling
 @st.cache_data
@@ -56,40 +52,28 @@ if data_error:
     st.error(f"Error loading data: {data_error}")
     st.stop()
 
-# Load model with fallback
+# Load model components
 @st.cache_resource
-def load_model_components(model_type="presentation"):
+def load_model_components():
     try:
-        if model_type == "improved":
-            model = joblib.load("models/saved/improved_model.pkl")
-            scaler = joblib.load("models/saved/improved_scaler.pkl")
-            features = joblib.load("models/saved/improved_features.pkl")
-            encoders = joblib.load("models/saved/improved_encoders.pkl")
-        else:
-            model = joblib.load("models/saved/presentation_model.pkl")
-            scaler = joblib.load("models/saved/presentation_scaler.pkl")
-            features = joblib.load("models/saved/presentation_features.pkl")
-            encoders = joblib.load("models/saved/presentation_encoders.pkl")
+        model = joblib.load("models/saved/model.pkl")
+        scaler = joblib.load("models/saved/scaler.pkl")
+        features = joblib.load("models/saved/features.pkl")
+        encoders = joblib.load("models/saved/encoders.pkl")
         
         return model, scaler, features, encoders, None
     except Exception as e:
         return None, None, None, None, str(e)
 
-# Determine which model to use
-model_type = "improved" if "Improved" in model_choice else "presentation"
-model, scaler, features, encoders, model_error = load_model_components(model_type)
+# Load model components
+model, scaler, features, encoders, model_error = load_model_components()
 
 if model_error:
     st.error(f"Error loading model: {model_error}")
-    if model_type == "improved":
-        st.info("Falling back to presentation model...")
-        model, scaler, features, encoders, model_error = load_model_components("presentation")
-        if model_error:
-            st.error("Could not load any model. Please check model files.")
-            st.stop()
+    st.error("Please ensure model files exist in models/saved/ directory.")
+    st.stop()
 
-# Sidebar Inputs with improved validation
-st.sidebar.header("🔍 Enter Property Details")
+
 
 # Get data ranges for validation
 def get_safe_range(column, default_min, default_max):
@@ -335,7 +319,7 @@ if prediction_success:
             st.metric("Price per m²", "N/A")
     
     with col3:
-        st.metric("Model Accuracy", f"{77.47 if model_type == 'presentation' else 'TBD'}%")
+        st.metric("Model Accuracy", "81.07%")
 
 # Data visualization
 st.markdown("---")
