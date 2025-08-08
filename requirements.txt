@@ -13,6 +13,7 @@ joblib>=1.0
 # Visualization
 matplotlib>=3.4
 seaborn>=0.11
+plotly>=5.0
 
 # (Optional) If you want to launch the notebook via Jupyter
 jupyter>=1.0

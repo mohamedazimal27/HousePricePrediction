@@ -1,0 +1,7 @@
+Collecting plotly
+  Using cached plotly-6.2.0-py3-none-any.whl.metadata (8.5 kB)
+Requirement already satisfied: narwhals>=1.15.1 in ./venv/lib/python3.12/site-packages (from plotly) (2.0.1)
+Requirement already satisfied: packaging in ./venv/lib/python3.12/site-packages (from plotly) (25.0)
+Using cached plotly-6.2.0-py3-none-any.whl (9.6 MB)
+Installing collected packages: plotly
+Successfully installed plotly-6.2.0
