@@ -65,8 +65,11 @@ max_garage = int(df["garage"].max())
 bedrooms = st.sidebar.slider("Bedrooms 🛏", min_value=1, max_value=max_bedrooms, value=min(3, max_bedrooms))
 bathrooms = st.sidebar.slider("Bathrooms 🚿", min_value=1, max_value=max_bathrooms, value=min(2, max_bathrooms))
 duplex = st.sidebar.selectbox("Property Type 🏠", options=["Duplex", "Non-Duplex"])
-district = st.sidebar.selectbox("District 📍", options=sorted(df["district"].unique()))
+# Select city first
 city = st.sidebar.selectbox("City 🏙️", options=sorted(df["city"].unique()))
+# Filter districts based on selected city
+filtered_districts = df[df["city"] == city]["district"].unique()
+district = st.sidebar.selectbox("District 📍", options=sorted(filtered_districts))
 front_direction = st.sidebar.selectbox("Front Direction 🧭", options=sorted(df["front_direction"].unique()))
 property_age = st.sidebar.slider("Property Age 🏗️ (years)", min_value=0, max_value=max_property_age, value=min(5, max_property_age))
 area = st.sidebar.slider("Land Area 📐 (m²)", min_value=100, max_value=min(max_land_area, 5000), value=min(300, max_land_area))
